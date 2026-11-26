@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { Movie } from "./types";
+import MovieModal from "./components/MovieModal.vue";
 
+const selected = ref<Movie | null>(null);
 const query = ref("");
 const movies = ref<Movie[]>([]);
 const loading = ref(false);
@@ -43,7 +45,12 @@ async function search() {
     <p v-if="error">{{ error }}</p>
 
     <div class="grid">
-      <div v-for="movie in movies" :key="movie.id" class="card">
+      <div
+        v-for="movie in movies"
+        :key="movie.id"
+        class="card"
+        @click="selected = movie"
+      >
         <img
           v-if="movie.poster_path"
           :src="`https://image.tmdb.org/t/p/w300${movie.poster_path}`"
@@ -53,6 +60,7 @@ async function search() {
         <p>⭐ {{ movie.vote_average.toFixed(1) }}</p>
       </div>
     </div>
+    <MovieModal v-if="selected" :movie="selected" @close="selected = null" />
   </main>
 </template>
 
@@ -71,5 +79,9 @@ main {
 .card img {
   width: 100%;
   border-radius: 8px;
+}
+
+.card {
+  cursor: pointer;
 }
 </style>
